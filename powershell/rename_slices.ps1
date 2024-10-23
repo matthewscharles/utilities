@@ -1,18 +1,23 @@
-# A quick script to automate renaming the files from Ableton Live's slice folders
-$replaceText = Read-Host -Prompt 'Enter the text to replace "Slice "'
+# Script to rename slices folders from Ableton Live
 Get-ChildItem | Rename-Item -NewName {
-    # Replace "Slice " with user input and then format the numbers correctly
-    $newName = $_.Name -replace "Slice ", $replaceText
-    if ($newName -match '(\d+)$') {
+    # Split the filename to preserve the extension
+    $baseName = $_.BaseName
+    $extension = $_.Extension
+
+    # Remove everything after the last space in the basename
+    $modifiedName = if ($baseName -match '^(.*?)\s+\S+$') { $matches[1] } else { $baseName }
+
+    # Append numbering with zeroes -- always three digits
+    if ($modifiedName -match '(\d+)$') {
         $number = $matches[1]
         if ($number.Length -eq 1) {
-            $newName -replace $number, ('00' + $number)
+            $modifiedName = $modifiedName -replace $number, ('00' + $number)
         } elseif ($number.Length -eq 2) {
-            $newName -replace $number, ('0' + $number)
-        } else {
-            $newName
+            $modifiedName = $modifiedName -replace $number, ('0' + $number)
         }
-    } else {
-        $newName
     }
+    
+    $modifiedName = $modifiedName -replace ' ', '_'
+    
+    $modifiedName + $extension
 }
