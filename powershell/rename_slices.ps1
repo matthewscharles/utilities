@@ -1,4 +1,4 @@
-# Script to rename slices folders from Ableton Live
+# Script to rename crop folders from Ableton Live
 Get-ChildItem | Rename-Item -NewName {
     # Split the filename to preserve the extension
     $baseName = $_.BaseName
